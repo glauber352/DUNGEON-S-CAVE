@@ -196,4 +196,339 @@
             background-color: #2c3e50;
             padding: 0.4rem 0.8rem;
             border-radius: 4px;
-            border: 1px solid
+            border: 1px solid #555; /* Fixed border style */
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div id="start-screen">
+            <h1>DUNGEONS CAVE</h1>
+            <p>Uma Aventura D&D</p>
+            <button id="start-game-button" class="pixel-button">COMEÇAR AVENTURA</button>
+        </div>
+
+        <div id="class-selection-modal" class="modal">
+            <h2>Escolha sua Classe</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <button class="pixel-button class-button" data-class="Warrior">Guerreiro</button>
+                <button class="pixel-button class-button" data-class="Mage">Mago</button>
+                <button class="pixel-button class-button" data-class="Rogue">Ladino</button>
+            </div>
+        </div>
+
+        <div id="game-screen">
+            <h2 id="game-title">DUNGEONS CAVE</h2>
+
+            <div id="default-view">
+                <div class="stats-area">
+                    <div class="player-panel panel">
+                        <h3>Herói</h3>
+                        <div class="player-stats">
+                            <span id="player-class">Classe: Guerreiro</span>
+                            <span id="player-hp">HP: 100/100</span>
+                            <span id="player-atk">ATK: 10</span>
+                            <span id="player-def">DEF: 5</span>
+                            <span id="player-gold">Ouro: 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-inventory-area">
+                    <div class="actions-panel panel">
+                        <h3>Ações</h3>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <button id="explore-button" class="pixel-button">EXPLORAR</button>
+                            <button id="rest-button" class="pixel-button">DESCANSAR</button>
+                            <button id="shop-button" class="pixel-button" disabled>LOJA (Em Breve)</button>
+                            <button id="inventory-button" class="pixel-button" disabled>INVENTÁRIO (Em Breve)</button>
+                        </div>
+                    </div>
+
+                    <div class="inventory-panel panel">
+                        <h3>Inventário</h3>
+                        <div class="inventory" id="player-inventory">
+                            <p class="text-gray-400 text-center">Nenhum item ainda...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="combat-scene">
+                <div class="stats-area">
+                    <div class="player-panel panel">
+                        <h3>Herói</h3>
+                        <div class="player-stats">
+                            <span id="combat-player-class">Classe: Guerreiro</span>
+                            <span id="combat-player-hp">HP: 100/100</span>
+                            <span id="combat-player-atk">ATK: 10</span>
+                            <span id="combat-player-def">DEF: 5</span>
+                        </div>
+                    </div>
+                    <div class="enemy-panel panel">
+                        <h3 id="enemy-name">Monstro</h3>
+                        <div class="enemy-info">
+                            <span id="enemy-hp">HP: 50/50</span>
+                            <span id="enemy-atk">ATK: 8</span>
+                            <span id="enemy-def">DEF: 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel panel">
+                    <h3>Ações de Combate</h3>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <button id="attack-button" class="pixel-button">ATACAR</button>
+                        <button id="flee-button" class="pixel-button">FUGIR</button>
+                        </div>
+                </div>
+            </div>
+
+            <div class="game-log-panel panel">
+                <h3>Registro de Ações</h3>
+                <div class="game-log" id="game-log">
+                    <p class="text-yellow-400">Bem-vindo à DUNGEONS CAVE! Prepare-se para sua aventura.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        const game = {
+            player: {},
+            enemy: null,
+            inCombat: false,
+            // Add other game state variables as needed
+        };
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const classSelectionModal = document.getElementById('class-selection-modal');
+        const gameScreen = document.getElementById('game-screen');
+        const startGameButton = document.getElementById('start-game-button');
+        const classButtons = document.querySelectorAll('.class-button');
+        const gameLog = document.getElementById('game-log');
+        const playerClassSpan = document.getElementById('player-class');
+        const playerHpSpan = document.getElementById('player-hp');
+        const playerAtkSpan = document.getElementById('player-atk');
+        const playerDefSpan = document.getElementById('player-def');
+        const playerGoldSpan = document.getElementById('player-gold');
+        const exploreButton = document.getElementById('explore-button');
+        const restButton = document.getElementById('rest-button');
+        const attackButton = document.getElementById('attack-button');
+        const fleeButton = document.getElementById('flee-button');
+        const enemyNameSpan = document.getElementById('enemy-name');
+        const enemyHpSpan = document.getElementById('enemy-hp');
+        const enemyAtkSpan = document.getElementById('enemy-atk');
+        const enemyDefSpan = document.getElementById('enemy-def');
+        const defaultView = document.getElementById('default-view');
+        const combatScene = document.getElementById('combat-scene');
+
+        // Game Logic Functions
+        function logMessage(message, type = '') {
+            const p = document.createElement('p');
+            p.textContent = message;
+            if (type) {
+                p.classList.add(`text-${type}-400`);
+            }
+            gameLog.appendChild(p);
+            gameLog.scrollTop = gameLog.scrollHeight; // Auto-scroll to bottom
+        }
+
+        function updatePlayerStats() {
+            playerClassSpan.textContent = `Classe: ${game.player.class}`;
+            playerHpSpan.textContent = `HP: ${game.player.currentHp}/${game.player.maxHp}`;
+            playerAtkSpan.textContent = `ATK: ${game.player.attack}`;
+            playerDefSpan.textContent = `DEF: ${game.player.defense}`;
+            playerGoldSpan.textContent = `Ouro: ${game.player.gold}`;
+
+            // Also update combat scene stats if applicable (they share IDs in your HTML)
+            document.getElementById('combat-player-class').textContent = `Classe: ${game.player.class}`;
+            document.getElementById('combat-player-hp').textContent = `HP: ${game.player.currentHp}/${game.player.maxHp}`;
+            document.getElementById('combat-player-atk').textContent = `ATK: ${game.player.attack}`;
+            document.getElementById('combat-player-def').textContent = `DEF: ${game.player.defense}`;
+        }
+
+        function updateEnemyStats() {
+            if (game.enemy) {
+                enemyNameSpan.textContent = game.enemy.name;
+                enemyHpSpan.textContent = `HP: ${game.enemy.currentHp}/${game.enemy.maxHp}`;
+                enemyAtkSpan.textContent = `ATK: ${game.enemy.attack}`;
+                enemyDefSpan.textContent = `DEF: ${game.enemy.defense}`;
+            } else {
+                enemyNameSpan.textContent = "Nenhum Inimigo";
+                enemyHpSpan.textContent = "HP: -";
+                enemyAtkSpan.textContent = "ATK: -";
+                enemyDefSpan.textContent = "DEF: -";
+            }
+        }
+
+        function enterCombat(enemy) {
+            game.enemy = { ...enemy, currentHp: enemy.maxHp }; // Copy enemy and set current HP
+            game.inCombat = true;
+            gameScreen.classList.add('in-combat'); // Add class to show combat scene
+            updateEnemyStats();
+            logMessage(`Um ${game.enemy.name} aparece! Prepare-se para a batalha!`, 'red');
+        }
+
+        function exitCombat() {
+            game.inCombat = false;
+            game.enemy = null;
+            gameScreen.classList.remove('in-combat'); // Remove class to show default view
+            logMessage("Você saiu do combate.", 'blue');
+        }
+
+        function playerAttack() {
+            if (!game.inCombat || !game.enemy) return;
+
+            let playerDamage = Math.max(0, game.player.attack - game.enemy.defense);
+            game.enemy.currentHp -= playerDamage;
+            logMessage(`Você atacou o ${game.enemy.name} e causou ${playerDamage} de dano.`, 'green');
+            updateEnemyStats();
+
+            if (game.enemy.currentHp <= 0) {
+                logMessage(`${game.enemy.name} foi derrotado! Você ganhou ${game.enemy.goldDrop} ouro.`, 'yellow');
+                game.player.gold += game.enemy.goldDrop;
+                updatePlayerStats();
+                exitCombat();
+                return;
+            }
+
+            // Enemy's turn
+            enemyAttack();
+        }
+
+        function enemyAttack() {
+            if (!game.inCombat || !game.enemy) return;
+
+            let enemyDamage = Math.max(0, game.enemy.attack - game.player.defense);
+            game.player.currentHp -= enemyDamage;
+            logMessage(`${game.enemy.name} atacou você e causou ${enemyDamage} de dano.`, 'red');
+            updatePlayerStats();
+
+            if (game.player.currentHp <= 0) {
+                logMessage("Você foi derrotado! Fim de jogo.", 'orange');
+                // Implement game over logic (e.g., reset game, show game over screen)
+                alert("Game Over! Você foi derrotado.");
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            game.player = {};
+            game.enemy = null;
+            game.inCombat = false;
+            startScreen.style.display = 'flex';
+            gameScreen.style.display = 'none';
+            classSelectionModal.style.display = 'none';
+            gameScreen.classList.remove('in-combat');
+            gameLog.innerHTML = '<p class="text-yellow-400">Bem-vindo à DUNGEONS CAVE! Prepare-se para sua aventura.</p>';
+        }
+
+        // Event Listeners
+        startGameButton.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            classSelectionModal.style.display = 'block'; // Show modal
+        });
+
+        classButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const selectedClass = event.target.dataset.class;
+                switch (selectedClass) {
+                    case 'Warrior':
+                        game.player = {
+                            class: 'Guerreiro',
+                            maxHp: 120,
+                            currentHp: 120,
+                            attack: 12,
+                            defense: 8,
+                            gold: 0,
+                            inventory: []
+                        };
+                        break;
+                    case 'Mage':
+                        game.player = {
+                            class: 'Mago',
+                            maxHp: 80,
+                            currentHp: 80,
+                            attack: 15,
+                            defense: 3,
+                            gold: 0,
+                            inventory: []
+                        };
+                        break;
+                    case 'Rogue':
+                        game.player = {
+                            class: 'Ladino',
+                            maxHp: 100,
+                            currentHp: 100,
+                            attack: 10,
+                            defense: 5,
+                            gold: 0,
+                            inventory: []
+                        };
+                        break;
+                    default:
+                        break;
+                }
+                updatePlayerStats();
+                classSelectionModal.style.display = 'none'; // Hide modal
+                gameScreen.style.display = 'flex'; // Show game screen
+                logMessage(`Você escolheu ser um ${game.player.class}. Sua aventura começa agora!`, 'blue');
+            });
+        });
+
+        exploreButton.addEventListener('click', () => {
+            logMessage("Você explora a caverna...", 'blue');
+            const randomEncounter = Math.random();
+            if (randomEncounter < 0.5) { // 50% chance of encounter
+                const enemies = [
+                    { name: 'Goblin', maxHp: 30, attack: 7, defense: 2, goldDrop: 10 },
+                    { name: 'Esqueleto', maxHp: 40, attack: 9, defense: 4, goldDrop: 15 },
+                    { name: 'Morcego Gigante', maxHp: 25, attack: 6, defense: 1, goldDrop: 8 }
+                ];
+                const chosenEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+                enterCombat(chosenEnemy);
+            } else {
+                logMessage("Você não encontrou nada interessante.", 'gray');
+                if (Math.random() < 0.3) { // 30% chance to find gold
+                    const foundGold = Math.floor(Math.random() * 10) + 5;
+                    game.player.gold += foundGold;
+                    logMessage(`Você encontrou ${foundGold} ouro!`, 'yellow');
+                    updatePlayerStats();
+                }
+            }
+        });
+
+        restButton.addEventListener('click', () => {
+            if (game.player.currentHp < game.player.maxHp) {
+                const healAmount = Math.floor(game.player.maxHp * 0.2); // Heal 20% of max HP
+                game.player.currentHp = Math.min(game.player.maxHp, game.player.currentHp + healAmount);
+                logMessage(`Você descansou e recuperou ${healAmount} HP.`, 'green');
+                updatePlayerStats();
+            } else {
+                logMessage("Você já está com HP máximo.", 'gray');
+            }
+        });
+
+        attackButton.addEventListener('click', playerAttack);
+
+        fleeButton.addEventListener('click', () => {
+            const fleeChance = Math.random();
+            if (fleeChance > 0.6) { // 40% chance to flee
+                logMessage("Você conseguiu fugir do combate!", 'blue');
+                exitCombat();
+            } else {
+                logMessage("Você falhou em fugir!", 'orange');
+                enemyAttack(); // Enemy gets a free attack if you fail to flee
+            }
+        });
+
+        // Initial setup
+        // Hide game screen and modal initially
+        gameScreen.style.display = 'none';
+        classSelectionModal.style.display = 'none';
+    </script>
+</body>
+</html>
