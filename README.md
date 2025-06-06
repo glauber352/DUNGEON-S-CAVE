@@ -1,398 +1,199 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DUNGEONS CAVE</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=MedievalSharp&display=swap" rel="stylesheet">
-
-  <!-- Estilos Customizados -->
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #1a1a2e;
-      color: #e0e0e0;
-      overscroll-behavior: none;
-    }
-
-    .medieval-title {
-      font-family: 'MedievalSharp', cursive;
-      color: #f9a826;
-    }
-
-    .game-container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #24243e;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-    }
-
-    .btn {
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: none;
-    }
-
-    .btn-primary {
-      background-color: #f9a826;
-      color: #1a1a2e;
-    }
-    .btn-primary:hover {
-      background-color: #fbc02d;
-    }
-
-    .btn-secondary {
-      background-color: #4a4a6a;
-      color: #e0e0e0;
-    }
-    .btn-secondary:hover {
-      background-color: #5f5f82;
-    }
-
-    .btn-danger {
-      background-color: #c70039;
-      color: white;
-    }
-    .btn-danger:hover {
-      background-color: #e00040;
-    }
-
-    .message-log {
-      background-color: #1e1e33;
-      border: 1px solid #3a3a5a;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 8px;
-      height: 200px;
-      overflow-y: auto;
-      font-size: 0.9em;
-      line-height: 1.6;
-    }
-    .message-log p {
-      margin-bottom: 8px;
-      border-bottom: 1px dashed #3a3a5a;
-      padding-bottom: 8px;
-    }
-    .message-log p:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-
-    .stat-bar-container {
-      width: 100%;
-      background-color: #3a3a5a;
-      border-radius: 6px;
-      overflow: hidden;
-      height: 20px;
-      margin-bottom: 5px;
-    }
-
-    .stat-bar {
-      height: 100%;
-      text-align: center;
-      line-height: 20px;
-      color: white;
-      font-size: 0.8em;
-      transition: width 0.5s ease-in-out;
-    }
-    .hp-bar { background-color: #c0392b; }
-    .xp-bar { background-color: #2980b9; }
-
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background-color: #24243e;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      text-align: center;
-      max-width: 90%;
-      width: 400px;
-    }
-
-    .hidden { display: none; }
-  </style>
-</head>
-<body>
-  <!-- Conteúdo aqui -->
-</body>
-</html>
-                    enemies: [
-                        { name: "Morcego Gigante", hp: 30, attack: 8, defense: 2, xp: 20, gold: 5 },
-                        { name: "Rato das Sombras", hp: 25, attack: 6, defense: 1, xp: 15, gold: 3 },
-                        { name: "Aranha Venenosa", hp: 35, attack: 9, defense: 3, xp: 25, gold: 7 }
-                    ]
-                },
-                ruinasAntigas: {
-                    id: "ruinasAntigas",
-                    name: "Ruínas Antigas",
-                    levelRange: "3-7",
-                    description: "Estruturas esquecidas, lar de espíritos e guardiões mágicos.",
-                    enemies: [
-                        { name: "Esqueleto Guerreiro", hp: 50, attack: 12, defense: 6, xp: 40, gold: 15 },
-                        { name: "Espírito Perdido", hp: 40, attack: 15, defense: 3, xp: 45, gold: 12 },
-                        { name: "Golem de Pedra", hp: 70, attack: 10, defense: 12, xp: 60, gold: 20 }
-                    ]
-                }
-            };
-
-        // Funções auxiliares
-        function logMessage(message) {
-            const p = document.createElement('p');
-            p.textContent = message;
-            messageLog.appendChild(p);
-            messageLog.scrollTop = messageLog.scrollHeight;
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DUNGEONS CAVE: Aventura D&D</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+    <style>
+        /* Estilos personalizados para o jogo */
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+            margin: 0;
         }
 
-        function updatePlayerUI() {
-            if (!playerCharacter) return;
-            playerNameDisplay.textContent = playerCharacter.name;
-            playerClassDisplay.textContent = playerCharacter.class;
-            playerLevelDisplay.textContent = playerCharacter.level;
-            playerCurrentHPDisplay.textContent = playerCharacter.hp;
-            playerMaxHPDisplay.textContent = playerCharacter.maxHp;
-            playerHPBar.style.width = `${(playerCharacter.hp / playerCharacter.maxHp) * 100}%`;
-            playerHPBar.textContent = `${playerCharacter.hp}/${playerCharacter.maxHp}`;
-            playerCurrentXPDisplay.textContent = playerCharacter.xp;
-            playerNextLevelXPDisplay.textContent = playerCharacter.nextLevelXp;
-            playerXPBar.style.width = `${(playerCharacter.xp / playerCharacter.nextLevelXp) * 100}%`;
-            playerXPBar.textContent = `${playerCharacter.xp}/${playerCharacter.nextLevelXp}`;
-            playerGoldDisplay.textContent = playerCharacter.gold;
-
-            inventoryList.innerHTML = '';
-            if (playerCharacter.inventory.length === 0) {
-                const li = document.createElement('li');
-                li.textContent = "Inventário vazio.";
-                inventoryList.appendChild(li);
-            } else {
-                playerCharacter.inventory.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    inventoryList.appendChild(li);
-                });
-            }
+        .game-container {
+            background-color: #34495e;
+            border: 4px solid #1a242f;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            padding: 1.5rem;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
         }
 
-        function showScreen(screen) {
-            loadingScreen.classList.add('hidden');
-            characterCreationScreen.classList.add('hidden');
-            mainGameScreen.classList.add('hidden');
-            screen.classList.remove('hidden');
+        h1, h2, h3 {
+            color: #f1c40f;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px #000;
         }
 
-        function randomEnemy(dungeon) {
-            const enemies = dungeon.enemies;
-            return JSON.parse(JSON.stringify(enemies[Math.floor(Math.random() * enemies.length)]));
+        .pixel-button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: 3px solid #c0392b;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            transition: background-color 0.1s, transform 0.1s;
+            box-shadow: 3px 3px #a52a22;
+            display: inline-block;
+            text-align: center;
+            image-rendering: pixelated;
         }
 
-        function startBattle(enemy) {
-            currentEnemy = enemy;
-            enemyEncounterDiv.classList.remove('hidden');
-            combatActionsDiv.classList.remove('hidden');
-            exploreDungeonButton.classList.add('hidden');
-            enemyNameDisplay.textContent = enemy.name;
-            enemyCurrentHPDisplay.textContent = enemy.hp;
-            enemyMaxHPDisplay.textContent = enemy.hp;
-            enemyHPBar.style.width = '100%';
-            logMessage(`Você encontrou um ${enemy.name}!`);
+        .pixel-button:hover {
+            background-color: #c0392b;
+            transform: translateY(1px);
+            box-shadow: 2px 2px #a52a22;
         }
 
-        function endBattle() {
-            currentEnemy = null;
-            enemyEncounterDiv.classList.add('hidden');
-            combatActionsDiv.classList.add('hidden');
-            exploreDungeonButton.classList.remove('hidden');
+        .pixel-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 #a52a22;
         }
 
-        function checkLevelUp() {
-            if (playerCharacter.xp >= playerCharacter.nextLevelXp) {
-                playerCharacter.level += 1;
-                playerCharacter.xp -= playerCharacter.nextLevelXp;
-                playerCharacter.nextLevelXp = Math.floor(playerCharacter.nextLevelXp * 1.5);
-                const hpIncrease = 10;
-                const attackIncrease = 2;
-                const defenseIncrease = 2;
-                playerCharacter.maxHp += hpIncrease;
-                playerCharacter.hp = playerCharacter.maxHp;
-                playerCharacter.attack += attackIncrease;
-                playerCharacter.defense += defenseIncrease;
-                statIncreasesList.innerHTML = `
-                    <li>+${hpIncrease} HP</li>
-                    <li>+${attackIncrease} Ataque</li>
-                    <li>+${defenseIncrease} Defesa</li>
-                `;
-                levelUpPlayerName.textContent = playerCharacter.name;
-                newPlayerLevel.textContent = playerCharacter.level;
-                levelUpModal.classList.remove('hidden');
-                logMessage(`Você subiu para o nível ${playerCharacter.level}!`);
-                updatePlayerUI();
-            }
+        .pixel-button:disabled {
+            background-color: #95a5a6;
+            border-color: #7f8c8d;
+            color: #bdc3c7;
+            cursor: not-allowed;
+            box-shadow: 3px 3px #525e5e;
         }
 
-        function playerAttack() {
-            if (!currentEnemy) return;
-            const damage = Math.max(0, playerCharacter.attack - currentEnemy.defense);
-            currentEnemy.hp -= damage;
-            logMessage(`Você causou ${damage} de dano ao ${currentEnemy.name}.`);
-            if (currentEnemy.hp <= 0) {
-                logMessage(`Você derrotou ${currentEnemy.name}!`);
-                playerCharacter.xp += currentEnemy.xp;
-                playerCharacter.gold += currentEnemy.gold;
-                checkLevelUp();
-                endBattle();
-                updatePlayerUI();
-            } else {
-                enemyTurn();
-            }
-            updateEnemyUI();
+        .panel {
+            background-color: #2c3e50;
+            border: 2px solid #1a242f;
+            border-radius: 5px;
+            padding: 1rem;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        function useSpecialAbility() {
-            if (specialAbilityCooldown) {
-                logMessage("Sua habilidade especial ainda está recarregando.");
-                return;
-            }
-
-            if (!currentEnemy) return;
-            let damage = 0;
-            if (playerCharacter.class === 'Ladino') {
-                damage = Math.max(0, (playerCharacter.attack * 2) - currentEnemy.defense);
-                logMessage("Você usa Ataque Furtivo!");
-            } else if (playerCharacter.class === 'Mago') {
-                damage = Math.max(0, (playerCharacter.attack + 10) - (currentEnemy.defense * 0.5));
-                logMessage("Você lança Bola de Fogo!");
-            } else if (playerCharacter.class === 'Cavaleiro') {
-                damage = 0;
-                playerCharacter.isShielded = true;
-                logMessage("Você ativa Escudo Imbatível!");
-            }
-
-            if (damage > 0) {
-                currentEnemy.hp -= damage;
-                logMessage(`Habilidade causou ${damage} de dano ao ${currentEnemy.name}.`);
-                if (currentEnemy.hp <= 0) {
-                    logMessage(`Você derrotou ${currentEnemy.name}!`);
-                    playerCharacter.xp += currentEnemy.xp;
-                    playerCharacter.gold += currentEnemy.gold;
-                    checkLevelUp();
-                    endBattle();
-                    updatePlayerUI();
-                } else {
-                    enemyTurn();
-                }
-                updateEnemyUI();
-            }
-
-            specialAbilityCooldown = true;
+        .game-log {
+            height: 150px;
+            overflow-y: auto;
+            background-color: #1a242f;
+            border: 2px solid #000;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            color: #95a5a6;
+            border-radius: 5px;
         }
 
-        function enemyTurn() {
-            if (!currentEnemy) return;
-            let damage = Math.max(0, currentEnemy.attack - playerCharacter.defense);
-            if (playerCharacter.isShielded) {
-                damage = 0;
-                playerCharacter.isShielded = false;
-                logMessage(`${currentEnemy.name} ataca, mas seu Escudo Imbatível bloqueia todo o dano!`);
-            } else {
-                playerCharacter.hp -= damage;
-                logMessage(`${currentEnemy.name} causa ${damage} de dano a você.`);
-            }
+        .game-log p { margin-bottom: 0.25rem; }
+        .game-log p.text-yellow-400 { color: #f1c40f; }
+        .game-log p.text-red-400 { color: #e74c3c; }
+        .game-log p.text-orange-400 { color: #f39c12; }
+        .game-log p.text-green-400 { color: #2ecc71; }
+        .game-log p.text-blue-300 { color: #85c1e9; }
 
-            if (playerCharacter.hp <= 0) {
-                playerCharacter.hp = 0;
-                updatePlayerUI();
-                gameOver();
-            } else {
-                updatePlayerUI();
-            }
+        .modal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #34495e;
+            border: 4px solid #1a242f;
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        #start-screen, #class-selection-modal, #game-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        function updateEnemyUI() {
-            if (!currentEnemy) return;
-            enemyCurrentHPDisplay.textContent = currentEnemy.hp;
-            enemyHPBar.style.width = `${(currentEnemy.hp / currentEnemy.maxHp) * 100}%`;
+        #start-screen {
+            align-items: center;
         }
 
-        function gameOver() {
-            gameOverModal.classList.remove('hidden');
-            gameOverMessage.textContent = "Você foi derrotado... Mas sempre há uma próxima tentativa!";
-            logMessage("Fim de jogo.");
+        #game-screen { display: none; }
+        
+        /* --- LÓGICA DE VISIBILIDADE DAS TELAS --- */
+        #default-view, #combat-scene {
+            display: none; /* Ambos começam escondidos */
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        /* Quando não está em combate, mostra a visão padrão */
+        #game-screen:not(.in-combat) #default-view {
+            display: flex;
         }
 
-        restartGameButton.addEventListener('click', () => {
-            location.reload();
-        });
+        /* Quando está em combate, mostra a cena de combate */
+        #game-screen.in-combat #combat-scene {
+            display: flex;
+        }
+        
+        /* --- ESTILOS DA VISÃO PADRÃO --- */
+        .stats-area, .actions-inventory-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
 
-        closeLevelUpModalButton.addEventListener('click', () => {
-            levelUpModal.classList.add('hidden');
-        });
+        @media (min-width: 768px) {
+            .stats-area, .actions-inventory-area { flex-direction: row; }
+        }
 
-        attackButton.addEventListener('click', () => {
-            playerAttack();
-        });
+        .player-panel, .enemy-panel, .inventory-panel { flex: 1; }
+        .actions-panel { flex: 2; }
 
-        specialAbilityButton.addEventListener('click', () => {
-            useSpecialAbility();
-        });
+        .player-stats, .enemy-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
 
-        leaveDungeonButton.addEventListener('click', () => {
-            dungeonView.classList.add('hidden');
-            townView.classList.remove('hidden');
-            currentDungeon = null;
-            currentEnemy = null;
-            specialAbilityCooldown = false;
-            endBattle();
-        });
+        .player-stats span, .enemy-info span {
+            background-color: #1a242f;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid #555;
+            white-space: nowrap;
+        }
+        
+        .inventory {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #1a242f;
+            border: 1px solid #555;
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
 
-        exploreDungeonButton.addEventListener('click', () => {
-            if (currentEnemy) {
-                logMessage("Você não pode explorar enquanto está em combate!");
-                return;
-            }
-            const enemy = randomEnemy(currentDungeon);
-            startBattle(enemy);
-            specialAbilityCooldown = false;
-        });
-
-        goToDungeonSelectionButton.addEventListener('click', () => {
-            townView.classList.add('hidden');
-            dungeonSelectionView.classList.remove('hidden');
-        });
-
-        backToTownButtonDungeon.addEventListener('click', () => {
-            dungeonSelectionView.classList.add('hidden');
-            townView.classList.remove('hidden');
-        });
-
-        restButton.addEventListener('click', () => {
-            playerCharacter.hp = playerCharacter.maxHp;
-            logMessage("Você descansou e recuperou todo o seu HP.");
-            updatePlayerUI();
-        });
-
-        // Continua: autenticação, carregamento de dados, criação de personagem, persistência no Firebase, etc.
-
-    </script>
-</body>
-</html>
+        .inventory-item {
+            background-color: #2c3e50;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid
